@@ -5,20 +5,32 @@ services:
   - docker
 
 before_install:
-  - docker build -t kubeparas/react-test -f ./client/Dockerfile.dev ./client
+  - docker build -t rallycoding/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run -e CI=true kubeparas/react-test npm test
+  - docker run -e CI=true rallycoding/react-test npm test
 
 after_success:
-  - docker build -t kubeparas/multi-client ./client
-  - docker build -t kubeparas/multi-nginx ./nginx
-  - docker build -t kubeparas/multi-server ./server
-  - docker build -t kubeparas/multi-worker ./worker
+  - docker build -t rallycoding/multi-client ./client
+  - docker build -t rallycoding/multi-nginx ./nginx
+  - docker build -t rallycoding/multi-server ./server
+  - docker build -t rallycoding/multi-worker ./worker
   # Log in to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   # Take those images and push them to docker hub
-  - docker push kubeparas/multi-client
-  - docker push kubeparas/multi-nginx
-  - docker push kubeparas/multi-server
-  - docker push kubeparas/multi-worker
+  - docker push rallycoding/multi-client
+  - docker push rallycoding/multi-nginx
+  - docker push rallycoding/multi-server
+  - docker push rallycoding/multi-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: 'us-east-1'
+  app: 'multi-docker'
+  env: 'MultiDocker-env'
+  bucket_name: 'elasticbeanstalk-us-east-1-730335523916'
+  bucket_path: 'docker-multi'
+  on:
+    branch: main
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
