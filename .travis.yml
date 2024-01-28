@@ -5,23 +5,23 @@ services:
   - docker
 
 before_install:
-  - docker build -t rallycoding/react-test -f ./client/Dockerfile.dev ./client
+  - docker build -t kubeparas/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run -e CI=true rallycoding/react-test npm test
+  - docker run -e CI=true kubeparas/react-test npm test
 
 after_success:
-  - docker build -t rallycoding/multi-client ./client
-  - docker build -t rallycoding/multi-nginx ./nginx
-  - docker build -t rallycoding/multi-server ./server
-  - docker build -t rallycoding/multi-worker ./worker
+  - docker build -t kubeparas/multi-client ./client
+  - docker build -t kubeparas/multi-nginx ./nginx
+  - docker build -t kubeparas/multi-server ./server
+  - docker build -t kubeparas/multi-worker ./worker
   # Log in to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   # Take those images and push them to docker hub
-  - docker push rallycoding/multi-client
-  - docker push rallycoding/multi-nginx
-  - docker push rallycoding/multi-server
-  - docker push rallycoding/multi-worker
+  - docker push kubeparas/multi-client
+  - docker push kubeparas/multi-nginx
+  - docker push kubeparas/multi-server
+  - docker push kubeparas/multi-worker
 
 deploy:
   provider: elasticbeanstalk
